@@ -3,25 +3,26 @@ description: Create DCU CICD runner
 runs:
   using: "composite"
   steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
-        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
-        role-duration-seconds: 900
-        aws-region: us-west-2
-    - name: Check out runner-autoscaling action
-      uses: actions/checkout@v2
-      with:
-        repository: gdcorp-actions/runner-autoscaling
-        token: ${{ secrets.CI_TOKEN }}
-        path: local-actions/runner-autoscaling
-    - name: Scale out runner autoscaling group to 1
-      uses: ./local-actions/runner-autoscaling
-      with:
-        labels: ec2ubuntu
-        github-token: ${{ secrets.REPO_PAT }}
-        time-to-live: '4 hour'
-        needs-direct-connect: true
-        runner-ami-id: /GoldenAMI/gd-ubuntu20.04/latest
+    - shell: bash
+      run: |
+        cat > ~/.aws/credentials <<
+        [CICD]
+        aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
+        aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
+        role_arn=${{ secrets.AWS_DEPLOY_ROLE_CICD }}
+        duration_seconds=900
+
+        EOF
+        cat > ~/.aws/config <<
+        [CICD]
+        region=us-west-2
+        output=json
+
+        EOF
+    - shell: bash
+      run: |
+        export AWS_PROFILE=CICD
+        git clone https://${{ secrets.REPO_PAT }}:x-oauth-basic@github.com/gdcorp-actions/runner-autoscaling.git local-actions/runner-autoscaling
+        cd local-actions/runner-autoscaling && git checkout v2
+        pip install -r local-actions/runner-autoscaling/requirements.txt
+        local-actions/runner-autoscaling/autoscale.sh "local-actions/runner-autoscaling" "start" "${{ secrets.REPO_PAT }}" "4 hour" "true" "ec2ubuntu" "t3.small" "/GoldenAMI/gd-ubuntu20.04/latest" "20" "${{ github.event.ref }}" "/dev/xvda"
