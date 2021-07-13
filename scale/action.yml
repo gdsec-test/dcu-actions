@@ -1,0 +1,27 @@
+name: DCU CI Runner Action
+description: Create DCU CICD runner
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
+        role-duration-seconds: 900
+        aws-region: us-west-2
+    - name: Check out runner-autoscaling action
+      uses: actions/checkout@v2
+      with:
+        repository: gdcorp-actions/runner-autoscaling
+        token: ${{ secrets.CI_TOKEN }}
+        path: local-actions/runner-autoscaling
+    - name: Scale out runner autoscaling group to 1
+      uses: ./local-actions/runner-autoscaling
+      with:
+        labels: ec2ubuntu
+        github-token: ${{ secrets.REPO_PAT }}
+        time-to-live: '4 hour'
+        needs-direct-connect: true
+        runner-ami-id: /GoldenAMI/gd-ubuntu20.04/latest

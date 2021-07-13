@@ -1,0 +1,58 @@
+name: DCU Python CI Action
+description: Perform basic python integration actions.
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
+        role-duration-seconds: 900
+        aws-region: us-west-2
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1.3.3
+    - name: Docker login for Golden Containers ECR
+      env:
+        ECR_REGISTRY: 764525110978.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com
+      run: |
+        echo "Using: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.7
+        architecture: 'x64'
+    - name: Checkout Tartufo Repo
+      uses: actions/checkout@v2
+      with:
+        repository: gdcorp-actions/tartufo
+        token: ${{ secrets.CI_TOKEN }}
+        path: .tartufo
+        ref: main
+        persist-credentials: false
+    - name: Tartufo secret scanning using the Tartufo GitHub Action
+      uses: ./.tartufo
+      with:
+          github_token: ${{ secrets.REPO_PAT }}
+    - name: Configure Artifactory Access
+      env:
+        DCU_ARTIFACTORY_RO_SVC_USER: ${{ secrets.DCU_ARTIFACTORY_RO_SVC_USER }}
+      run: |
+        mkdir -p ~/.pip/
+        echo "[global]" > ~/.pip/pip.conf
+        echo "index-url = https://ci_ro_infosec-dcu:${DCU_ARTIFACTORY_RO_SVC_USER}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
+    - name: Base python setup/install
+      run: |
+        python -m venv .venv && source .venv/bin/activate
+        pip install -r tools.txt -r requirements.txt
+    - name: Run linter
+      run: |
+        python -m venv .venv && source .venv/bin/activate
+        flake8 .
+    - name: Run unit tests
+      run: |
+        python -m venv .venv && source .venv/bin/activate
+        nosetests test/
