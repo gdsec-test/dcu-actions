@@ -41,7 +41,7 @@ runs:
       run: |
         git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/tartufo.git .tartufo
         cd .tartufo && git checkout v3.2.0 && cd ..
-        docker run -it -e "INPUT_GITHUB_TOKEN=${{ inputs.repo-pat }}" -v $PWD/.tartufo:/tartufo_action --entrypoint /tartufo_action/entrypoint.py 764525110978.dkr.ecr.us-west-2.amazonaws.com/alpine-tartufo:v2.5.0
+        docker run -e "INPUT_GITHUB_TOKEN=${{ inputs.repo-pat }}" -v $PWD/.tartufo:/tartufo_action --entrypoint /tartufo_action/entrypoint.py 764525110978.dkr.ecr.us-west-2.amazonaws.com/alpine-tartufo:v2.5.0
     - shell: bash
       run: |
         mkdir -p ~/.pip/
