@@ -43,6 +43,7 @@ runs:
         cd .tartufo && git checkout v3.2.0 && cd ..
         export GITHUB_WORKSPACE=/tartufo_action
         export INPUT_GITHUB_TOKEN=${{ inputs.repo-pat }}
+        export INPUT_CURRENT_EVENT_ONLY=true
         docker run --env-file <(env) -v $PWD:/repo -v $PWD/.tartufo:/tartufo_action --entrypoint /tartufo_action/entrypoint.py 764525110978.dkr.ecr.us-west-2.amazonaws.com/alpine-tartufo:v2.5.0
     - shell: bash
       run: |
