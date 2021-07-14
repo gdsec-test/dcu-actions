@@ -14,15 +14,16 @@ inputs:
     description: Github PAT with access to the local repo
     required: true
 runs:
-  using: "composite"
+  using: composite
   steps:
     - shell: bash
       run: |
+        mkdir -p ~/.aws/
         cat > ~/.aws/credentials <<
         [CICD]
-        aws_access_key_id=${{ inputs.aws-access-key }}
-        aws_secret_access_key=${{ inputs.aws-secret-key }}
-        role_arn=${{ inputs.aws-deploy-role }}
+        aws_access_key_id="${{ inputs.aws-access-key }}"
+        aws_secret_access_key="${{ inputs.aws-secret-key }}"
+        role_arn="${{ inputs.aws-deploy-role }}"
         duration_seconds=900
 
         EOF
