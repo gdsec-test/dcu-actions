@@ -22,18 +22,19 @@ runs:
     - shell: bash
       run: |
         mkdir -p ~/.aws/
-        echo "[CICD]" > ~/.aws/credentials
+        echo "[cicd]" > ~/.aws/credentials
         echo "aws_access_key_id=${{ inputs.aws-access-key }}" >> ~/.aws/credentials
         echo "aws_secret_access_key=${{ inputs.aws-secret-key }}" >> ~/.aws/credentials
         echo "role_arn=${{ inputs.aws-deploy-role }}" >> ~/.aws/credentials
         echo "duration_seconds=900" >> ~/.aws/credentials
 
-        echo "[CICD]" > ~/.aws/config
+        echo "[profile cicd]" > ~/.aws/config
         echo "region=us-west-2" >> ~/.aws/config
         echo "output=json" >> ~/.aws/config
+        echo "source_profile=cicd" >> ~/.aws/config
     - shell: bash
       run: |
-        export AWS_PROFILE=CICD
+        export AWS_PROFILE=cicd
         export AWS_REGION='us-west-2'
         aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 764525110978.dkr.ecr.us-west-2.amazonaws.com
     - shell: bash
