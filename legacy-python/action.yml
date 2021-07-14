@@ -49,5 +49,5 @@ runs:
     - shell: bash
       run: |
         python -m venv .venv && source .venv/bin/activate
-        pip install flake8 isort
-        make tools
+        pip install flake8
+        flake8 --config ./.flake8 .
