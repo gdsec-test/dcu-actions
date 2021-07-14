@@ -1,5 +1,18 @@
 name: DCU CI Runner Action
 description: Create DCU CICD runner
+inputs:
+  aws-access-key:
+    description: AWS Access key
+    required: true
+  aws-secret-key:
+    description: AWS secret key
+    required: true
+  aws-deploy-role:
+    description: AWS deploy role arn
+    required: true
+  repo-pat:
+    description: Github PAT with access to the local repo
+    required: true
 runs:
   using: "composite"
   steps:
@@ -7,9 +20,9 @@ runs:
       run: |
         cat > ~/.aws/credentials <<
         [CICD]
-        aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID_CICD }}
-        aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
-        role_arn=${{ secrets.AWS_DEPLOY_ROLE_CICD }}
+        aws_access_key_id=${{ inputs.aws-access-key }}
+        aws_secret_access_key=${{ inputs.aws-secret-key }}
+        role_arn=${{ inputs.aws-deploy-role }}
         duration_seconds=900
 
         EOF
@@ -22,7 +35,7 @@ runs:
     - shell: bash
       run: |
         export AWS_PROFILE=CICD
-        git clone https://${{ secrets.REPO_PAT }}:x-oauth-basic@github.com/gdcorp-actions/runner-autoscaling.git local-actions/runner-autoscaling
+        git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/runner-autoscaling.git local-actions/runner-autoscaling
         cd local-actions/runner-autoscaling && git checkout v2
         pip install -r local-actions/runner-autoscaling/requirements.txt
-        local-actions/runner-autoscaling/autoscale.sh "local-actions/runner-autoscaling" "start" "${{ secrets.REPO_PAT }}" "4 hour" "true" "ec2ubuntu" "t3.small" "/GoldenAMI/gd-ubuntu20.04/latest" "20" "${{ github.event.ref }}" "/dev/xvda"
+        local-actions/runner-autoscaling/autoscale.sh "local-actions/runner-autoscaling" "start" "${{ inputs.repo-pat }}" "4 hour" "true" "ec2ubuntu" "t3.small" "/GoldenAMI/gd-ubuntu20.04/latest" "20" "${{ github.event.ref }}" "/dev/xvda"
