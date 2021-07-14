@@ -50,4 +50,4 @@ runs:
       run: |
         python -m venv .venv && source .venv/bin/activate
         pip install flake8
-        flake8 --exclude .venv --config ./.flake8 .
+        flake8 --config ./.flake8 .
