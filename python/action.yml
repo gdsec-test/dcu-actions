@@ -38,7 +38,7 @@ runs:
     - shell: bash
       run: |
         git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/tartufo.git .tartufo
-        INPUT_GITHUB_TOKEN=${{ inputs.repo-pat }} python entrypoint.py
+        INPUT_GITHUB_TOKEN=${{ inputs.repo-pat }} python .tartufo/entrypoint.py
     - shell: bash
       run: |
         mkdir -p ~/.pip/
