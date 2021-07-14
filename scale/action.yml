@@ -31,6 +31,7 @@ runs:
     - shell: bash
       run: |
         export AWS_PROFILE=CICD
+        export AWS_REGION='us-west-2'
         git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/runner-autoscaling.git local-actions/runner-autoscaling
         cd local-actions/runner-autoscaling && git checkout v1.5.0 && cd ../..
         pip install -r local-actions/runner-autoscaling/requirements.txt
