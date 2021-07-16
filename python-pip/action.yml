@@ -1,0 +1,18 @@
+name: DCU Python Pip Push
+description: Build the python package and push it to the DCU artifactory.
+inputs:
+  artifactory-password:
+    description: CI RW user artifactory password.
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo "[distutils]" > ~/.pypirc
+        echo "index-servers = local" >> ~/.pypirc
+        echo "[local]" >> ~/.pypirc
+        echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
+        echo "username: ci_digital-crimes-unit" >> ~/.pypirc
+        echo "password: ${{ inputs.artifactory-password }}" >> ~/.pypirc
+        python setup.py bdist_wheel upload -r local
