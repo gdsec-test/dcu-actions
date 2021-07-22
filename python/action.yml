@@ -55,9 +55,9 @@ runs:
         pip install -r tools.txt -r requirements.txt
         flake8 .
         # Over-ride AWS credentials to prevent a unit test from accidentally making production changes.
-        FAKE_AWS_ACCESS_KEY_ID := $$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1)
-        FAKE_AWS_SECRET_ACCESS_KEY := $$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)
-        FAKE_AWS_DEFAULT_REGION := us-west-2
+        FAKE_AWS_ACCESS_KEY_ID=$$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1)
+        FAKE_AWS_SECRET_ACCESS_KEY=$$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)
+        FAKE_AWS_DEFAULT_REGION=us-west-2
         export AWS_ACCESS_KEY_ID=${FAKE_AWS_ACCESS_KEY_ID}
 	      export AWS_SECRET_ACCESS_KEY=${FAKE_AWS_SECRET_ACCESS_KEY}
 	      export AWS_DEFAULT_REGION=${FAKE_AWS_DEFAULT_REGION}
