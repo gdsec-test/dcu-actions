@@ -48,6 +48,7 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
+        go env -w GOPRIVATE="github.com/gdcorp-infosec/*"
         git config --global url."https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
         GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -i -v -o build/build ${{ inputs.main-path }}
         go test -v ./...
