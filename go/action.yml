@@ -13,6 +13,9 @@ inputs:
   repo-pat:
     description: Github PAT with access to the local repo
     required: true
+  private-github-repo-pat:
+    description: Github PAT with access to private on prem github
+    required: true
   main-path:
     description: Main path of the go repo
     required: true
@@ -48,7 +51,8 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
-        go env -w GOPRIVATE="github.com/gdcorp-infosec/*"
+        go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.secureserver.net/*"
         git config --global url."https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
+        git config --global url."https://${{ inputs.private-github-repo-pat }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
         GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -i -v -o build/build ${{ inputs.main-path }}
         go test -v ./...
