@@ -35,5 +35,6 @@ runs:
         export AWS_REGION='us-west-2'
         git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/runner-autoscaling.git local-actions/runner-autoscaling
         cd local-actions/runner-autoscaling && git checkout v1.6.1 && cd ../..
-        pip install -r local-actions/runner-autoscaling/requirements.txt
+        pip install 'requests>=2.25,<3' --force-reinstall
+        pip install sceptre
         ACTION_PATH="$PWD/local-actions/runner-autoscaling/" local-actions/runner-autoscaling/autoscale.sh "$PWD/local-actions/runner-autoscaling" "start" "${{ inputs.repo-pat }}" "4 hour" "true" "ec2ubuntu" "t3.small" "/GoldenAMI/gd-ubuntu20.04/latest" "20" "${{ github.event.ref }}" "/dev/xvda" "false"
