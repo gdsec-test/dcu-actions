@@ -51,6 +51,8 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
+        go get -u golang.org/x/lint/golint
+        golint ./...
         go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.secureserver.net/*"
         git config --global url."https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
         git config --global url."https://${{ inputs.private-github-repo-pat }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
