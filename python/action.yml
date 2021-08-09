@@ -46,6 +46,8 @@ runs:
         export INPUT_CURRENT_EVENT_ONLY=true
         docker run --env-file <(env) -v $PWD:/repo -v $GITHUB_EVENT_PATH:$GITHUB_EVENT_PATH -v $PWD/.tartufo:/tartufo_action --entrypoint /tartufo_action/entrypoint.py 764525110978.dkr.ecr.us-west-2.amazonaws.com/alpine-tartufo:v2.5.0
         rm -rf .tartufo
+        rm  ~/.aws/credentials
+        rm ~/.aws/config
     - shell: bash
       run: |
         echo "$HOME/.local/bin" >> $GITHUB_PATH
