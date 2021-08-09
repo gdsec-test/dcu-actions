@@ -48,9 +48,9 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
-        poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
-        python3 -m pip install --user pipx
+        python3 -m pip install --user pipx poetry
         python3 -m pipx ensurepath
+        poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
         make init
         make lint
         make unit-test
