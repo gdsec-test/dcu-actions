@@ -39,7 +39,7 @@ runs:
         aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 764525110978.dkr.ecr.us-west-2.amazonaws.com
     - shell: bash
       run: |
-        apt install docker-ce docker-ce-cli containerd.io -y
+        sudo apt install docker-ce docker-ce-cli containerd.io -y
         git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/tartufo.git .tartufo
         cd .tartufo && git checkout v3.2.0 && cd ..
         export GITHUB_WORKSPACE=/tartufo_action
