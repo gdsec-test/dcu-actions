@@ -48,12 +48,9 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
-        mkdir -p ~/.pip/
-        echo "[global]" > ~/.pip/pip.conf
-        echo "index-url = https://ci_ro_infosec-dcu:${{ inputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
-        python -m venv .venv && source .venv/bin/activate
-        pip install -r tools.txt -r requirements.txt
-        flake8 .
-        AWS_ACCESS_KEY_ID="test" AWS_SECRET_ACCESS_KEY="test" nosetests test/
-        deactivate
-        rm -rf .venv/
+        poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
+        python3 -m pip install --user pipx
+        python3 -m pipx ensurepath
+        make init
+        make lint
+        make unit-test
