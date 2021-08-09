@@ -48,6 +48,8 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        export PATH=$HOME/.local/bin:$PATH
         python3 -m pip install --user pipx poetry
         python3 -m pipx ensurepath
         poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
