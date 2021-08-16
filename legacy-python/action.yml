@@ -51,5 +51,6 @@ runs:
         python -m venv .venv && source .venv/bin/activate
         pip install flake8
         flake8 --config ./.flake8 .
+        isort -c --skip .venv/ .
         deactivate
         rm -rf .venv/
