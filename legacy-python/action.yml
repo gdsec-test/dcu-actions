@@ -48,22 +48,27 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
-        mkdir -p ~/.pip
-        echo "[distutils]" > ~/.pypirc
-        echo "index-servers = local" >> ~/.pypirc
-        echo "[local]" >> ~/.pypirc
-        echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
-        echo "username: ci_digital-crimes-unit" >> ~/.pypirc
-        echo "password: ${{ inputs.artifactory-password }}" >> ~/.pypirc
-
-        echo "[global]" > ~/.pip/pip.conf
-        echo "index-url = https://ci_ro_infosec-dcu:${{ inputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
-
         python -m venv .venv && source .venv/bin/activate
         pip install flake8 isort
-        [ -f Makefile ] && make env
-        [ -f Makefile ] && make test
+
         flake8 --config ./.flake8 .
         isort -c --skip .venv/ --atomic .
+
+        if [[ ! -z "${{ inputs.artifactory-password }}" ]];
+        then
+          mkdir -p ~/.pip
+          echo "[distutils]" > ~/.pypirc
+          echo "index-servers = local" >> ~/.pypirc
+          echo "[local]" >> ~/.pypirc
+          echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
+          echo "username: ci_digital-crimes-unit" >> ~/.pypirc
+          echo "password: ${{ inputs.artifactory-password }}" >> ~/.pypirc
+
+          echo "[global]" > ~/.pip/pip.conf
+          echo "index-url = https://ci_ro_infosec-dcu:${{ inputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
+          [ -f Makefile ] && make env
+          [ -f Makefile ] && make test
+        fi
+
         deactivate
         rm -rf .venv/
