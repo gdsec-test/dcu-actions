@@ -49,10 +49,10 @@ runs:
     - shell: bash
       run: |
         python -m venv .venv && source .venv/bin/activate
-        pip install flake8 isort
+        pip install flake8==3.9.2 isort==4.3.4
 
         flake8 --config ./.flake8 .
-        isort -c --skip .venv/ --atomic .
+        isort -c --skip .venv/ --atomic
 
         if [[ ! -z "${{ inputs.artifactory-password }}" ]];
         then
