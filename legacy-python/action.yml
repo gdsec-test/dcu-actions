@@ -50,7 +50,8 @@ runs:
       run: |
         python -m venv .venv && source .venv/bin/activate
         pip install flake8 isort
-        make env
+        [ -f Makefile ] && make env
+        [ -f Makefile ] && make test
         flake8 --config ./.flake8 .
         isort -c --skip .venv/ .
         deactivate
