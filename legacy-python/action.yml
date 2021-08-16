@@ -48,6 +48,12 @@ runs:
         rm -rf .tartufo
     - shell: bash
       run: |
+        echo "[distutils]" > ~/.pypirc
+        echo "index-servers = local" >> ~/.pypirc
+        echo "[local]" >> ~/.pypirc
+        echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
+        echo "username: ci_digital-crimes-unit" >> ~/.pypirc
+        echo "password: ${{ inputs.artifactory-password }}" >> ~/.pypirc
         python -m venv .venv && source .venv/bin/activate
         pip install flake8 isort
         [ -f Makefile ] && make env
