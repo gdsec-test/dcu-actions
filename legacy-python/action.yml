@@ -53,6 +53,6 @@ runs:
         [ -f Makefile ] && make env
         [ -f Makefile ] && make test
         flake8 --config ./.flake8 .
-        isort -c --skip .venv/ .
+        isort -c --skip .venv/ --atomic .
         deactivate
         rm -rf .venv/
