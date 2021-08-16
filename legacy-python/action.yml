@@ -49,7 +49,8 @@ runs:
     - shell: bash
       run: |
         python -m venv .venv && source .venv/bin/activate
-        pip install flake8
+        pip install flake8 isort
+        make env
         flake8 --config ./.flake8 .
         isort -c --skip .venv/ .
         deactivate
