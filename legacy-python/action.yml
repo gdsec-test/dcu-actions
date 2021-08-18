@@ -71,6 +71,7 @@ runs:
           [ -f Makefile ] && make tools
 
           [ -f Makefile ] && if [[ `git status --porcelain | wc -l` -gt 0 ]] ; then echo "imports not run through isort" ; exit 1 ; fi
+          [ -f Makefile ] && git status --porcelain
 
           [ -f Makefile ] && make test
         fi
