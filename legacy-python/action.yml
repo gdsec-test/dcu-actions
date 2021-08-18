@@ -70,8 +70,8 @@ runs:
 
           [ -f Makefile ] && make tools
 
-          [ -f Makefile ] && git status --porcelain
-          [ -f Makefile ] && if [[ `git status --porcelain | wc -l` -gt 0 ]] ; then echo "imports not run through isort" ; exit 1 ; fi
+          # We expect one change - a folder called local-actions.
+          [ -f Makefile ] && if [[ `git status --porcelain | wc -l` -gt 1 ]] ; then echo "imports not run through isort" ; exit 1 ; fi
 
           [ -f Makefile ] && make test
         fi
