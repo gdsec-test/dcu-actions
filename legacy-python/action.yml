@@ -68,7 +68,7 @@ runs:
 
           [ -f Makefile ] && make env
 
-          [ -f Makefile ] && isort -c --skip .venv/ --atomic
+          [ -f Makefile ] && isort -c --skip .venv/ --atomic .
 
           [ -f Makefile ] && make test
         fi
