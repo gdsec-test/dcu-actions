@@ -58,6 +58,6 @@ runs:
         make init
         make lint
         # We expect one change - a folder called local-actions.
-        git status --porcelain
+        git checkout -- package.json
         if [[ `git status --porcelain | wc -l` -gt 1 ]] ; then echo "Failed lint checks" ; exit 1 ; fi
         make unit-test
