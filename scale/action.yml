@@ -30,13 +30,29 @@ runs:
         echo "output=json" >> ~/.aws/config
         echo "source_profile=cicd" >> ~/.aws/config
     - shell: bash
+      env:
+        ACTION_PATH: "$PWD/local-actions/runner-autoscaling"
+        MODE: "start"
+        GITHUB_TOKEN: "${{ inputs.repo-pat }}"
+        TTL: "4 hour"
+        NEEDS_DX: "true"
+        GH_EVENT_REF: ${{ github.event.ref }}
+        RUNNER_INSTANCE_TYPE: "t3.small"
+        RUNNER_AMI_ID: "/GoldenAMI/gd-ubuntu20.04/latest"
+        RUNNER_VOLUME_SIZE: "100"
+        RUNNER_DEVICE_NAME: "/dev/sda1"
+        RUNNER_LABELS: "ec2ubuntu"
+        USE_CICD_ROLE: "false"
+        DESIRED_SIZE: 1
+        DESIRED_RUNNER_NAME: ''
+        CUSTOM_USER_DATA: "echo 'No Custom UserData'"
       run: |
         export AWS_PROFILE=cicd
         export AWS_REGION='us-west-2'
         git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/runner-autoscaling.git local-actions/runner-autoscaling
-        cd local-actions/runner-autoscaling && git checkout v1.6.1 && cd ../..
+        cd local-actions/runner-autoscaling && git checkout v1.11.0 && cd ../..
         pip install 'requests>=2.25,<3' --force-reinstall
         pip install sceptre
-        RUNNER_LABELS="ec2ubuntu" ACTION_PATH="$PWD/local-actions/runner-autoscaling/" local-actions/runner-autoscaling/autoscale.sh "$PWD/local-actions/runner-autoscaling" "start" "${{ inputs.repo-pat }}" "4 hour" "true" "ec2ubuntu" "t3.small" "/GoldenAMI/gd-ubuntu20.04/latest" "100" "${{ github.event.ref }}" "/dev/sda1" "false"
+        local-actions/runner-autoscaling/autoscale.sh
     - shell: bash
       run: rm -rf local-actions/runner-autoscaling
