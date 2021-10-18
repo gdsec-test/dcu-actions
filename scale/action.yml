@@ -53,6 +53,6 @@ runs:
         cd local-actions/runner-autoscaling && git checkout v1.11.0 && cd ../..
         pip install 'requests>=2.25,<3' --force-reinstall
         pip install sceptre
-        local-actions/runner-autoscaling/autoscale.sh
+        ACTION_PATH="$PWD/local-actions/runner-autoscaling" local-actions/runner-autoscaling/autoscale.sh
     - shell: bash
       run: rm -rf local-actions/runner-autoscaling
