@@ -31,7 +31,7 @@ runs:
         echo "source_profile=cicd" >> ~/.aws/config
     - shell: bash
       env:
-        ACTION_PATH: "$PWD/local-actions/runner-autoscaling"
+        ACTION_PATH: "./local-actions/runner-autoscaling"
         MODE: "start"
         GITHUB_TOKEN: "${{ inputs.repo-pat }}"
         TTL: "4 hour"
