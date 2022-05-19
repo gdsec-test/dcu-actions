@@ -16,4 +16,4 @@ runs:
         rm poetry.lock
         poetry install
         make build
-        poetry publish -r cset
+        poetry publish -r cset -u ci_digital-crimes-unit -p ${{ inputs.artifactory-password }}
