@@ -63,7 +63,7 @@ runs:
         go test -v ./...
     - shell: bash
       run: |
-        if [[ "${{inputs.compile}}" != "" ]]; then
+        if [[ "${{inputs.compile}}" != "true" ]]; then
           go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.secureserver.net/*"
           git config --global url."https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
           git config --global url."https://${{ inputs.on-prem-github-repo-pat }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
