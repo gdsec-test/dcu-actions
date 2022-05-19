@@ -9,6 +9,7 @@ runs:
   steps:
     - shell: bash
       run: |
+        export PATH=$HOME/.local/bin:$PATH
         python3 -m pip install --user pipx poetry
         python3 -m pipx ensurepath
         poetry config http-basic.gddy ci_digital-crimes-unit ${{ inputs.artifactory-password }}
