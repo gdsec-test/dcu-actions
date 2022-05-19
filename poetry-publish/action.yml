@@ -14,5 +14,6 @@ runs:
         python3 -m pipx ensurepath
         poetry config http-basic.gddy ci_digital-crimes-unit ${{ inputs.artifactory-password }}
         poetry config repositories.cset https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local
+        poetry install
         make build
         poetry publish -r cset
