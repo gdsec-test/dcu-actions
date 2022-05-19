@@ -19,6 +19,10 @@ inputs:
   main-path:
     description: Main path of the go repo
     required: true
+  compile:
+    description: Attempt to compile the go binary in main path.
+    required: true
+    default: true
 runs:
   using: composite
   steps:
@@ -54,7 +58,13 @@ runs:
         go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.secureserver.net/*"
         git config --global url."https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
         git config --global url."https://${{ inputs.on-prem-github-repo-pat }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
-        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -i -v -o build/build ${{ inputs.main-path }}
         go get -u golang.org/x/lint/golint
         golint ./...
         go test -v ./...
+    - shell: bash
+      if: inputs.compile
+      run: |
+        go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.secureserver.net/*"
+        git config --global url."https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
+        git config --global url."https://${{ inputs.on-prem-github-repo-pat }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
+        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -i -v -o build/build ${{ inputs.main-path }}
