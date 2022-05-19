@@ -9,6 +9,8 @@ runs:
   steps:
     - shell: bash
       run: |
+        python3 -m pip install --user pipx poetry
+        python3 -m pipx ensurepath
         poetry config http-basic.gddy ci_digital-crimes-unit ${{ inputs.artifactory-password }}
         poetry config repositories.cset https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local
         make build
