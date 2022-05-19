@@ -1,0 +1,15 @@
+name: DCU Python Pip Push
+description: Build the python package and push it to the DCU artifactory.
+inputs:
+  artifactory-password:
+    description: CI RW user artifactory password.
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        poetry config http-basic.gddy ci_digital-crimes-unit ${{ inputs.artifactory-password }}
+        poetry config repositories.cset https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local
+        make build
+        poetry publish -r cset
