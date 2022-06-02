@@ -21,7 +21,7 @@ runs:
         rm poetry.lock
         make init
         make lint
-        tartufo scan-local-repo --branch $(git rev-parse --abbrev-ref HEAD) .
+        tartufo scan-local-repo .
         # We expect one change - a folder called local-actions.
         git checkout -- package.json ||:
         if [[ `git status --porcelain | wc -l` -gt 1 ]] ; then echo "Failed lint checks" ; exit 1 ; fi
