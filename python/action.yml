@@ -24,5 +24,6 @@ runs:
         tartufo scan-local-repo .
         # We expect one change - a folder called local-actions.
         git checkout -- package.json ||:
+        git status --porcelain
         if [[ `git status --porcelain | wc -l` -gt 1 ]] ; then echo "Failed lint checks" ; exit 1 ; fi
         make unit-test
