@@ -14,8 +14,9 @@ runs:
       run: |
         echo "$HOME/.local/bin" >> $GITHUB_PATH
         export PATH=$HOME/.local/bin:$PATH
-        python3 -m pip install --user pipx poetry tartufo
+        python3 -m pip install --user pipx tartufo
         python3 -m pipx ensurepath
+        pipx install poetry
         poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
         poetry config http-basic.gddy ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
         rm poetry.lock
