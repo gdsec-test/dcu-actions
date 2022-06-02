@@ -57,6 +57,7 @@ runs:
         poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
         poetry config http-basic.gddy ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
         rm poetry.lock
+        ls -la _work/_tool/Python/3.7.10/x64/lib
         make init
         make lint
         # We expect one change - a folder called local-actions.
