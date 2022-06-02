@@ -53,7 +53,7 @@ runs:
         echo "$HOME/.local/bin" >> $GITHUB_PATH
         export PATH=$HOME/.local/bin:$PATH
         echo $PWD
-        ls -la _work/_tool/Python/3.7.10/x64/lib
+        ls -la ../../_tool/Python/3.7.10/x64/lib
         python3 -m pip install --user pipx poetry
         python3 -m pipx ensurepath
         poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
