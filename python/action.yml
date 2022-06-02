@@ -56,6 +56,7 @@ runs:
         python3 -m pipx ensurepath
         poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
         poetry config http-basic.gddy ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
+        rm poetry.lock
         make init
         make lint
         # We expect one change - a folder called local-actions.
