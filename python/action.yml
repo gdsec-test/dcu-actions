@@ -40,7 +40,7 @@ runs:
     - shell: bash
       run: |
         git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/tartufo.git .tartufo
-        cd .tartufo && git checkout v3.2.0 && cd ..
+        cd .tartufo && git checkout v2.6.0 && cd ..
         export GITHUB_WORKSPACE=/tartufo_action
         export INPUT_GITHUB_TOKEN=${{ inputs.repo-pat }}
         export INPUT_CURRENT_EVENT_ONLY=true
