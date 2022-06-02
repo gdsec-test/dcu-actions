@@ -14,7 +14,6 @@ runs:
       run: |
         echo "$HOME/.local/bin" >> $GITHUB_PATH
         export PATH=$HOME/.local/bin:$PATH
-        export LD_LIBRARY_PATH="/usr/local/lib/:$PWD/../../_tool/Python/3.7.10/x64/lib"
         python3 -m pip install --user pipx poetry tartufo
         python3 -m pipx ensurepath
         poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
