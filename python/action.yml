@@ -19,10 +19,6 @@ runs:
         python3 -m pip install --user pipx tartufo
         python3 -m pipx ensurepath
         pipx install poetry
-        poetry config http-basic.gddy-artifactory ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
-        poetry config http-basic.gddy ci_ro_infosec-dcu ${{ inputs.artifactory-password }}
-        rm poetry.lock
-        rm -rf ~/.cache/pypoetry
         make init
         make lint
         tartufo scan-local-repo .
