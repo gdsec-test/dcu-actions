@@ -1,19 +1,25 @@
 name: DCU Python Pip Push
 description: Build the python package and push it to the DCU artifactory.
-inputs:
-  artifactory-password:
-    description: CI RW user artifactory password.
-    required: true
 runs:
   using: composite
   steps:
+    - name: Get Secrets
+      id: secrets
+      run: |
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/CICD/artifactory' --query 'SecretString' --output text)
+        USERNAME=$(echo ${SECRET} | jq -r .username)
+        PASSWORD=$(echo ${SECRET} | jq -r .password)
+        echo "::set-output name=artifactory-username::${USERNAME}"
+        echo "::add-mask::$USERNAME"
+        echo "::set-output name=artifactory-password::${PASSWORD}"
+        echo "::add-mask::$PASSWORD"
     - shell: bash
       run: |
         echo "[distutils]" > ~/.pypirc
         echo "index-servers = local" >> ~/.pypirc
         echo "[local]" >> ~/.pypirc
         echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
-        echo "username: ci_digital-crimes-unit" >> ~/.pypirc
-        echo "password: ${{ inputs.artifactory-password }}" >> ~/.pypirc
+        echo "username: ${{ steps.secrets.outputs.artifactory-username }}" >> ~/.pypirc
+        echo "password: ${{ steps.secrets.outputs.artifactory-password }}" >> ~/.pypirc
         pip install wheel
         python setup.py bdist_wheel upload -r local

@@ -1,48 +1,28 @@
 name: DCU Python CI Action
 description: Perform basic python integration actions.
-inputs:
-  aws-access-key:
-    description: AWS Access key
-    required: true
-  aws-secret-key:
-    description: AWS secret key
-    required: true
-  aws-deploy-role:
-    description: AWS deploy role arn
-    required: true
-  repo-pat:
-    description: Github PAT with access to the local repo
-    required: true
-  artifactory-password:
-    description: CI RO user artifactory password.
-    required: true
 runs:
   using: composite
   steps:
+    - name: Get Secrets
+      id: secrets
+      run: |
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
+        PAT=$(echo ${SECRET} | jq -r .PAT)
+        echo "::set-output name=pat::${PAT}"
+        echo "::add-mask::$PAT"
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '/CICD/artifactory' --query 'SecretString' --output text)
+        USERNAME=$(echo ${SECRET} | jq -r .username)
+        PASSWORD=$(echo ${SECRET} | jq -r .password)
+        echo "::set-output name=artifactory-username::${USERNAME}"
+        echo "::add-mask::$USERNAME"
+        echo "::set-output name=artifactory-password::${PASSWORD}"
+        echo "::add-mask::$PASSWORD"
     - shell: bash
       run: |
-        mkdir -p ~/.aws/
-        echo "[cicd]" > ~/.aws/credentials
-        echo "aws_access_key_id=${{ inputs.aws-access-key }}" >> ~/.aws/credentials
-        echo "aws_secret_access_key=${{ inputs.aws-secret-key }}" >> ~/.aws/credentials
-        echo "role_arn=${{ inputs.aws-deploy-role }}" >> ~/.aws/credentials
-        echo "duration_seconds=900" >> ~/.aws/credentials
-
-        echo "[profile cicd]" > ~/.aws/config
-        echo "region=us-west-2" >> ~/.aws/config
-        echo "output=json" >> ~/.aws/config
-        echo "source_profile=cicd" >> ~/.aws/config
-    - shell: bash
-      run: |
-        export AWS_PROFILE=cicd
-        export AWS_REGION='us-west-2'
-        aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 764525110978.dkr.ecr.us-west-2.amazonaws.com
-    - shell: bash
-      run: |
-        git clone https://${{ inputs.repo-pat }}:x-oauth-basic@github.com/gdcorp-actions/tartufo.git .tartufo
+        git clone https://${{ steps.secrets.outputs.pat }}:x-oauth-basic@github.com/gdcorp-actions/tartufo.git .tartufo
         cd .tartufo && git checkout v3.2.0 && cd ..
         export GITHUB_WORKSPACE=/tartufo_action
-        export INPUT_GITHUB_TOKEN=${{ inputs.repo-pat }}
+        export INPUT_GITHUB_TOKEN=${{ steps.secrets.outputs.pat }}
         export INPUT_CURRENT_EVENT_ONLY=true
         docker run --env-file <(env) -v $PWD:/repo -v $GITHUB_EVENT_PATH:$GITHUB_EVENT_PATH -v $PWD/.tartufo:/tartufo_action --entrypoint /tartufo_action/entrypoint.py 764525110978.dkr.ecr.us-west-2.amazonaws.com/alpine-tartufo:v2.5.0
         rm -rf .tartufo
@@ -53,18 +33,18 @@ runs:
 
         flake8 --config ./.flake8 .
 
-        if [[ ! -z "${{ inputs.artifactory-password }}" ]];
+        if [[ ! -z "${{ steps.secrets.outputs.artifactory-password }}" ]];
         then
           mkdir -p ~/.pip
           echo "[distutils]" > ~/.pypirc
           echo "index-servers = local" >> ~/.pypirc
           echo "[local]" >> ~/.pypirc
           echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
-          echo "username: ci_digital-crimes-unit" >> ~/.pypirc
-          echo "password: ${{ inputs.artifactory-password }}" >> ~/.pypirc
+          echo "username: ${{ steps.secrets.outputs.artifactory-username }}" >> ~/.pypirc
+          echo "password: ${{ steps.secrets.outputs.artifactory-password }}" >> ~/.pypirc
 
           echo "[global]" > ~/.pip/pip.conf
-          echo "index-url = https://ci_ro_infosec-dcu:${{ inputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
+          echo "index-url = https://ci_ro_infosec-dcu:${{ steps.secrets.outputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
 
           [ -f Makefile ] && make env
 
