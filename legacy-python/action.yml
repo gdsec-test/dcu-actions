@@ -3,7 +3,7 @@ description: Perform basic python integration actions.
 runs:
   using: composite
   steps:
-    - name: Get Secrets
+    - shell: bash
       id: secrets
       run: |
         SECRET=$(aws secretsmanager get-secret-value --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)

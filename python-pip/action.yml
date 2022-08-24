@@ -3,7 +3,7 @@ description: Build the python package and push it to the DCU artifactory.
 runs:
   using: composite
   steps:
-    - name: Get Secrets
+    - shell: bash
       id: secrets
       run: |
         SECRET=$(aws secretsmanager get-secret-value --secret-id '/CICD/artifactory' --query 'SecretString' --output text)
