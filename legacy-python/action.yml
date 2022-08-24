@@ -45,7 +45,7 @@ runs:
           echo "password: ${{ steps.secrets.outputs.artifactory-password }}" >> ~/.pypirc
 
           echo "[global]" > ~/.pip/pip.conf
-          echo "index-url = https://ci_ro_infosec-dcu:${{ steps.secrets.outputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
+          echo "index-url = https://${{ steps.secrets.outputs.artifactory-username }}:${{ steps.secrets.outputs.artifactory-password }}@artifactory.secureserver.net/artifactory/api/pypi/python-virt/simple" >> ~/.pip/pip.conf
 
           [ -f Makefile ] && make env || exit 0
 
