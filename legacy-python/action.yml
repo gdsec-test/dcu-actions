@@ -1,5 +1,9 @@
 name: DCU Python CI Action
 description: Perform basic python integration actions.
+inputs:
+  full-stretch:
+    required: false
+    default: true
 runs:
   using: composite
   steps:
@@ -34,7 +38,7 @@ runs:
 
         flake8 --config ./.flake8 .
 
-        if [[ ! -z "${{ steps.secrets.outputs.artifactory-password }}" ]];
+        if [[ "${{inputs.full-stretch}}" == "true" ]];
         then
           mkdir -p ~/.pip
           echo "[distutils]" > ~/.pypirc
