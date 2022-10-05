@@ -34,7 +34,7 @@ runs:
     - shell: bash
       run: |
         python -m venv .venv && source .venv/bin/activate
-        pip install flake8==3.9.2 isort==4.3.4 importlib-metadata<5.0
+        pip install flake8==3.9.2 isort==4.3.4 importlib-metadata==4.6.1
 
         flake8 --config ./.flake8 .
 
