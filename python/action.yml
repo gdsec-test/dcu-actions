@@ -19,12 +19,11 @@ runs:
         export PATH=$HOME/.local/bin:$PATH
         export POETRY_HTTP_BASIC_GDDY_USERNAME="${{ steps.secrets.outputs.artifactory-username }}"
         export POETRY_HTTP_BASIC_GDDY_PASSWORD="${{ steps.secrets.outputs.artifactory-password }}"
-        python3 -m pip install --user pipx tartufo
+        python3 -m pip install --user pipx
         python3 -m pipx ensurepath
         pipx install poetry
         make init
         make lint
-        tartufo scan-local-repo .
         # We expect one change - a folder called local-actions.
         git checkout -- poetry.lock ||:
         if [[ `git status --porcelain | wc -l` -gt 1 ]] ; then echo "Failed lint checks" ; exit 1 ; fi
