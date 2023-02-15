@@ -1,0 +1,49 @@
+name: kube cert refresh
+description: Action to refresh cert and push into kubectl
+inputs:
+  cert:
+    description: cert name
+    required: true
+  jwt:
+    description: jwt with access to the cert api
+    required: true
+  group:
+    description: Owning team
+    required: true
+  context:
+    description: kubectl context to use
+    required: true
+  namespace:
+    description: kubernetes namespace to use
+    required: true
+  secret-name:
+    description: kubernetes secret name to use
+    required: true
+  kube-config:
+    description: path to the kube-config
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: gdcorp-actions/ssl-action@main
+      with:
+        command: import-secrets
+        certificates: '[{"server":"${{ inputs.cert }}","allow_renewal":true}]'
+        team: ${{ inputs.group }}
+        renew: true
+        sso_token: ${{ inputs.jwt }}
+        renewal_days: 90
+    - shell: bash
+      env:
+        AWS_REGION: us-west-2
+      run: |
+        export KUBECONFIG=${{ inputs.jwt }}
+        SECRET=$(aws secretsmanager get-secret-value --secret-id '${{ inputs.cert }}' --query 'SecretString' --output text)
+        CERT=$(echo ${SECRET} | jq -r .crt)
+        CHAIN=$(echo ${SECRET} | jq -r .chain)
+        KEY=$(echo ${SECRET} | jq -r .key)
+        echo "::add-mask::$CERT"
+        echo "::add-mask::$CHAIN"
+        echo "::add-mask::$KEY"
+
+        kubectl --context=${{ inputs.context }} -n ${{ inputs.namespace }} create secret generic ${{ inputs.secret-name }} --from-literal=tls.crt="$CERT$CHAIN" --from-literal=tls.key="$KEY" --dry-run -o yaml | kubectl --context=${{ inputs.context }} apply -f -
