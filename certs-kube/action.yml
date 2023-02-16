@@ -14,18 +14,16 @@ inputs:
     description: kubectl context to use
     required: true
   namespace:
-    description: kubernetes namespace to use
+    description: csv list of kubernetes namespace's the secret should exist in.
     required: true
   secret-name:
     description: kubernetes secret name to use
-    required: true
-  kube-config:
-    description: path to the kube-config
     required: true
 runs:
   using: composite
   steps:
     - uses: gdcorp-actions/ssl-action@main
+      id: certs
       with:
         command: import-secrets
         certificates: '[{"server":"${{ inputs.cert }}","allow_renewal":true}]'
@@ -37,13 +35,14 @@ runs:
       env:
         AWS_REGION: us-west-2
       run: |
-        export KUBECONFIG=${{ inputs.jwt }}
         SECRET=$(aws secretsmanager get-secret-value --secret-id '${{ inputs.cert }}' --query 'SecretString' --output text)
-        CERT=$(echo ${SECRET} | jq -r .crt)
-        CHAIN=$(echo ${SECRET} | jq -r .chain)
-        KEY=$(echo ${SECRET} | jq -r .key)
-        echo "::add-mask::$CERT"
-        echo "::add-mask::$CHAIN"
-        echo "::add-mask::$KEY"
+        echo ${SECRET} | jq -r .crt > tls.crt
+        echo ${SECRET} | jq -r .chain >> tls.crt
+        echo ${SECRET} | jq -r .key > tls.key
 
-        kubectl --context=${{ inputs.context }} -n ${{ inputs.namespace }} create secret generic ${{ inputs.secret-name }} --from-literal=tls.crt="$CERT$CHAIN" --from-literal=tls.key="$KEY" --dry-run -o yaml | kubectl --context=${{ inputs.context }} apply -f -
+        for namespace in $(echo ${{ inputs.namespace }} | sed "s/,/ /g")
+        do
+          kubectl --context=${{ inputs.context }} -n $namespace create secret generic ${{ inputs.secret-name }} --from-file=tls.crt=./tls.crt --from-file=tls.key=./tls.key --dry-run -o yaml | kubectl --context=${{ inputs.context }} -n $namespace apply -f -
+        done
+        rm tls.crt
+        rm tls.key
