@@ -22,6 +22,9 @@ inputs:
   secret-type:
     description: kubernetes secret type to create name to use
     required: true
+  slack-webhook:
+    description: slack webhook to send messages with
+    required: true
 runs:
   using: composite
   steps:
@@ -56,7 +59,7 @@ runs:
           NEW_SECRET=$(kubectl --context=${{ inputs.context }} -n $namespace get secret ${{ inputs.secret-name }} -o yaml)
           
           if [ "$OLD_SECRET" != "$NEW_SECRET" ]; then
-              echo "${{ inputs.secret-name }} changed in $namespace, roll impacted pods"
+              curl --silent -H 'Content-Type: application/json' --data "{\"channel\": \"#ise-oncall-notifications\", \"username\": \"Certificate Updates\", \"as_user\": \"true\", \"link_names\": \"true\", \"icon_emoji\": \":github:\", \"attachments\": [{\"pretext\":\"Certificate Update\", \"text\": \"${{ inputs.secret-name }} changed in $namespace, roll impacted pods\"}] }" ${{ inputs.slack-webhook }}
           fi
         done
         rm tls.crt
