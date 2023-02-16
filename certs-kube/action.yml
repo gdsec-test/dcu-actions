@@ -46,11 +46,17 @@ runs:
 
         for namespace in $(echo ${{ inputs.namespace }} | sed "s/,/ /g")
         do
+          OLD_SECRET=$(kubectl --context=${{ inputs.context }} -n $namespace get secret ${{ inputs.secret-name }} -o yaml)
           if [[ "${{ inputs.secret-type }}" == "opaque" ]];
           then
             kubectl --context=${{ inputs.context }} -n $namespace create secret generic ${{ inputs.secret-name }} --from-file=tls.crt=./tls.crt --from-file=tls.key=./tls.key --dry-run=client -o yaml | kubectl --context=${{ inputs.context }} -n $namespace apply -f -
           else
             kubectl --context=${{ inputs.context }} -n $namespace create secret tls ${{ inputs.secret-name }} --cert=./tls.crt --key=./tls.key --dry-run=client -o yaml | kubectl --context=${{ inputs.context }} -n $namespace apply -f -
+          fi
+          NEW_SECRET=$(kubectl --context=${{ inputs.context }} -n $namespace get secret ${{ inputs.secret-name }} -o yaml)
+          
+          if [ "$OLD_SECRET" != "$NEW_SECRET" ]; then
+              echo "${{ inputs.secret-name }} changed in $namespace, roll impacted pods"
           fi
         done
         rm tls.crt
