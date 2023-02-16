@@ -42,7 +42,7 @@ runs:
 
         for namespace in $(echo ${{ inputs.namespace }} | sed "s/,/ /g")
         do
-          kubectl --context=${{ inputs.context }} -n $namespace create secret generic ${{ inputs.secret-name }} --from-file=tls.crt=./tls.crt --from-file=tls.key=./tls.key --dry-run -o yaml | kubectl --context=${{ inputs.context }} -n $namespace apply -f -
+          kubectl --context=${{ inputs.context }} -n $namespace create secret generic ${{ inputs.secret-name }} --from-file=tls.crt=./tls.crt --from-file=tls.key=./tls.key --dry-run=client -o yaml | kubectl --context=${{ inputs.context }} -n $namespace apply -f -
         done
         rm tls.crt
         rm tls.key
