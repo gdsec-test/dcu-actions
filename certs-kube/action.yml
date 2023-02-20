@@ -49,7 +49,9 @@ runs:
 
         for namespace in $(echo ${{ inputs.namespace }} | sed "s/,/ /g")
         do
+          set +o pipefail
           OLD_SECRET=$(kubectl --context=${{ inputs.context }} -n $namespace get secret ${{ inputs.secret-name }} -o json | jq -r '.data')
+          set -o pipefail
           if [[ "${{ inputs.secret-type }}" == "opaque" ]];
           then
             kubectl --context=${{ inputs.context }} -n $namespace create secret generic ${{ inputs.secret-name }} --from-file=tls.crt=./tls.crt --from-file=tls.key=./tls.key --dry-run=client -o yaml | kubectl --context=${{ inputs.context }} -n $namespace apply -f -
