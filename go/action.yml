@@ -26,6 +26,7 @@ runs:
       run: |
         go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.secureserver.net/*"
         git config --global url."https://${{ steps.secrets.outputs.pat-cloud }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
+        git config --global url."https://${{ steps.secrets.outputs.pat-cloud }}:x-oauth-basic@github.com/gdcorp-golang".insteadOf "https://github.com/gdcorp-golang"
         git config --global url."https://${{ steps.secrets.outputs.pat-onpremise }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
         go get -u golang.org/x/lint/golint
         golint ./...
@@ -35,6 +36,7 @@ runs:
         if [[ "${{inputs.compile}}" == "true" ]]; then
           go env -w GOPRIVATE="github.com/gdcorp-infosec/*,github.secureserver.net/*"
           git config --global url."https://${{ steps.secrets.outputs.pat-cloud }}:x-oauth-basic@github.com/gdcorp-infosec".insteadOf "https://github.com/gdcorp-infosec"
+          git config --global url."https://${{ steps.secrets.outputs.pat-cloud }}:x-oauth-basic@github.com/gdcorp-golang".insteadOf "https://github.com/gdcorp-golang"
           git config --global url."https://${{ steps.secrets.outputs.pat-onpremise }}:x-oauth-basic@github.secureserver.net".insteadOf "https://github.secureserver.net"
           GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -i -v -o build/build ${{ inputs.main-path }}
         fi
