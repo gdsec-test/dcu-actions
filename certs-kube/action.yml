@@ -42,7 +42,7 @@ runs:
         AWS_REGION: us-west-2
       run: |
         CERT_NAME=$( echo ${{ inputs.cert }} | tr "*" "_")
-        SECRET=$(aws secretsmanager get-secret-value --secret-id $CERT_NAME --query 'SecretString' --output text)
+        SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id $CERT_NAME --query 'SecretString' --output text)
         echo ${SECRET} | jq -r .crt > tls.crt
         echo ${SECRET} | jq -r .chain >> tls.crt
         echo ${SECRET} | jq -r .key > tls.key

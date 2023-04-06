@@ -14,11 +14,11 @@ runs:
     - shell: bash
       id: secrets
       run: |
-        SECRET=$(aws secretsmanager get-secret-value --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
+        SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id '/GitHub/GitHub-Actions-Runner-PAT' --query 'SecretString' --output text)
         PAT=$(echo ${SECRET} | jq -r .PAT)
         echo "::set-output name=pat-cloud::${PAT}"
         echo "::add-mask::$PAT"
-        SECRET=$(aws secretsmanager get-secret-value --secret-id '/KeePass/github-pat/secureserver' --query 'SecretString' --output text)
+        SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id '/KeePass/github-pat/secureserver' --query 'SecretString' --output text)
         PREMISE_PAT=$(echo ${SECRET} | jq -r .pat)
         echo "::set-output name=pat-onpremise::${PREMISE_PAT}"
         echo "::add-mask::$PREMISE_PAT"
