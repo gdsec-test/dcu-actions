@@ -28,11 +28,16 @@ inputs:
 runs:
   using: composite
   steps:
+    - shell: bash
+      id: output
+      run: |
+        CERT_SECRET_NAME="certificate-$( echo ${{ inputs.cert }} | tr \"*\" \"_\")""
+        echo "::set-output name=cert-secret-name::${CERT_SECRET_NAME}"
     - uses: gdcorp-actions/ssl-action@main
       id: certs
       with:
         command: import-secrets
-        certificates: '[{"server":"${{ inputs.cert }}","allow_renewal":true}]'
+        certificates: '[{"server":"${{ inputs.cert }}","allow_renewal":true, "secret_id": "${{ steps.output.outputs.cert-secret-name }}"}]'
         team: ${{ inputs.group }}
         renew: true
         sso_token: ${{ inputs.jwt }}
@@ -41,8 +46,7 @@ runs:
       env:
         AWS_REGION: us-west-2
       run: |
-        CERT_NAME=$( echo ${{ inputs.cert }} | tr "*" "_")
-        SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id $CERT_NAME --query 'SecretString' --output text)
+        SECRET=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id ${{ steps.output.outputs.cert-secret-name }} --query 'SecretString' --output text)
         echo ${SECRET} | jq -r .crt > tls.crt
         echo ${SECRET} | jq -r .chain >> tls.crt
         echo ${SECRET} | jq -r .key > tls.key
