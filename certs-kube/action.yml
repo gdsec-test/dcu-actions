@@ -31,7 +31,7 @@ runs:
     - shell: bash
       id: output
       run: |
-        CERT_SECRET_NAME="certificate-$( echo ${{ inputs.cert }} | tr \"*\" \"_\")""
+        CERT_SECRET_NAME="certificate-$( echo ${{ inputs.cert }} | tr \"*\" \"_\")"
         echo "::set-output name=cert-secret-name::${CERT_SECRET_NAME}"
     - uses: gdcorp-actions/ssl-action@main
       id: certs
