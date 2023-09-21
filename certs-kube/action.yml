@@ -33,7 +33,7 @@ runs:
       run: |
         CERT_SECRET_NAME="certificate-$( echo ${{ inputs.cert }} | tr \"*\" \"_\")"
         echo "::set-output name=cert-secret-name::${CERT_SECRET_NAME}"
-    - uses: gdcorp-actions/ssl-action@main
+    - uses: gdcorp-actions/ssl-action@a483387eb4f3b1c1fabe0f85afdca1a49180a8c0
       id: certs
       with:
         command: import-secrets
