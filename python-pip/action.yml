@@ -18,7 +18,7 @@ runs:
         echo "[distutils]" > ~/.pypirc
         echo "index-servers = local" >> ~/.pypirc
         echo "[local]" >> ~/.pypirc
-        echo "repository: https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
+        echo "repository: https://gdartifactory1.jfrog.io/artifactory/api/pypi/pypi-digital-crimes-unit-main-local" >> ~/.pypirc
         echo "username: ${{ steps.secrets.outputs.artifactory-username }}" >> ~/.pypirc
         echo "password: ${{ steps.secrets.outputs.artifactory-password }}" >> ~/.pypirc
         pip install wheel

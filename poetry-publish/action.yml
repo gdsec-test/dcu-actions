@@ -18,7 +18,7 @@ runs:
         export PATH=$HOME/.local/bin:$PATH
         curl -sSL https://install.python-poetry.org | python -
         poetry config http-basic.gddy ${{ steps.secrets.outputs.artifactory-username }} ${{ steps.secrets.outputs.artifactory-password }}
-        poetry config repositories.cset https://artifactory.secureserver.net/artifactory/api/pypi/pypi-digital-crimes-unit-main-local
+        poetry config repositories.cset https://gdartifactory1.jfrog.io/artifactory/api/pypi/pypi-digital-crimes-unit-main-local
         rm poetry.lock
         poetry install
         make build
