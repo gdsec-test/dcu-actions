@@ -59,6 +59,9 @@ runs:
           echo "test starts here"
           kubectl --context=${{ inputs.context }} -n $namespace create secret generic ${{ inputs.secret-name }} --from-file=tls.crt=./tls.crt --from-file=tls.key=./tls.key --dry-run=client -o yaml
           echo "test ends here"
+          echo "some debug info"
+          which kubectl 
+          echo $pwd
           if [[ "${{ inputs.secret-type }}" == "opaque" ]];
           then
             kubectl --context=${{ inputs.context }} -n $namespace create secret generic ${{ inputs.secret-name }} --from-file=tls.crt=./tls.crt --from-file=tls.key=./tls.key --dry-run=client -o yaml | kubectl --context=${{ inputs.context }} -n $namespace apply -f -
